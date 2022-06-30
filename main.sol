@@ -2,15 +2,17 @@
 pragma solidity ^0.8.0;
 
 contract Hungrryyyy {
+    //store quantity of price here
     struct Item {
         uint quantity;
         uint price;
     }
-    address public restaurent;
-    uint public CashBalance;
-    string[] availableItems;
-    mapping(string=>Item) public FoodItems;
+    address public restaurent;  //address of restaurent wallet
+    uint public CashBalance;    //available balance in restaurent cash counter
+    string[] availableItems;    // list of available food items
+    mapping(string=>Item) public FoodItems;   //food inventory
 
+    //initializing inventory and cash balance
     constructor(string[] memory _item, uint[] memory _quantity, uint[] memory _price, uint cash) {
         require(_item.length==_quantity.length && _item.length==_price.length,"Invalid Inventory");
         for(uint i=0; i<_item.length; i++) {
@@ -18,16 +20,17 @@ contract Hungrryyyy {
             availableItems.push(_item[i]);
         }
         CashBalance=cash;
-        restaurent=msg.sender;
+        restaurent=msg.sender; //setting the address of restaurent owner
     }
 
+    // add new items to the inventory
     function addItem(string memory _item, uint _quantity, uint _price) public {
         require(msg.sender==restaurent,"Only owner can add items");
-        if(FoodItems[_item].price!=0) {
+        if(FoodItems[_item].price!=0) {   // if item is already available, add quantity
             FoodItems[_item].quantity+=_quantity;
             FoodItems[_item].price=_price;
         } else {
-            FoodItems[_item]=Item(_quantity,_price);
+            FoodItems[_item]=Item(_quantity,_price);   //new item
             availableItems.push(_item);
         }
     }
@@ -47,6 +50,7 @@ contract Hungrryyyy {
         pay(billedAmount);
     }
 
+    // customer pay function
     function pay(uint billedAmount) private {
         require(msg.value>=billedAmount,"Insufficient balance");
         CashBalance+=billedAmount;
